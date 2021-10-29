@@ -54,7 +54,30 @@ app.use(express.static('./public'));
 
 app.get('/', (req, res) => res.render('index'));
 
-
+app.post('/upload', (req, res) => {
+  upload(req, res, (err) => {
+    if (err) {
+      res.render('index', {
+        msg: err
+      });
+    } else {
+      if (req.file == undefined) {
+        res.render('index', {
+          msg: 'Error: No File Selected!'
+        });
+      } else {
+        const sessionId = new Date().getTime();
+        res.render('index', {
+          msg: `File uploaded. Processing video... Check Session ID: ${sessionId}`,
+        });
+        const pythonProcess = spawn('python3', ["random_script.py", sessionId, `public/uploads/${req.file.filename}`]);
+        pythonProcess.stdout.on('data', (data) => {
+          console.log(data.toString());
+        });
+      }
+    }
+  });
+});
 
 const port = 80;
 
