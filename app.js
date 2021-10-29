@@ -79,6 +79,20 @@ app.post('/upload', (req, res) => {
   });
 });
 
+app.get('/request/search?:search', (req, res) => {
+  client.get(req.query.search, function (err, reply) {
+    if (!reply) {
+      res.render('index', {
+        msg: 'Processing... Please wait',
+      });
+    } else {
+      res.render('index', {
+        msg: `REUSLT: ${reply.substring(8, reply.length - 3)}`,
+      });
+    }
+  });
+});
+
 const port = 80;
 
 app.listen(port, () => console.log(`Server started on port ${port}`));
